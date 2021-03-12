@@ -12,6 +12,7 @@ pkgs.mkShell {
   buildInputs =
   with pkgs;
   [
+    minicom
     pkgsCross.avr.buildPackages.gcc
     avrdude
     git

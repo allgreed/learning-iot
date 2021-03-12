@@ -8,3 +8,6 @@ main.hex: main.bin
 
 flash: main.hex
 	avrdude -p atmega328p -carduino -U flash:w:main.hex:i -F -P /dev/ttyUSB0
+
+serial:
+	minicom -D /dev/ttyUSB0 -b 115200
