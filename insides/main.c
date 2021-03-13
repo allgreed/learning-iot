@@ -17,7 +17,6 @@
 #define TICKS_PER_SECOND(prescaler_rate) (F_CPU / prescaler_rate)
 
 
-// TODO: figure it out
 void uart_putchar(char c)
 {
     loop_until_bit_is_set(UCSR0A, UDRE0);
@@ -49,7 +48,6 @@ int main()
     UBRR0H = UBRRH_VALUE;
     UBRR0L = UBRRL_VALUE;
 #if USE_2X
-    // TODO: question: the datasheet says at page 159 that this only matters for UART, and we're using USART
     UCSR0A |= _BV(U2X0);
 #else
     UCSR0A &= ~(_BV(U2X0));
