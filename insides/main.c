@@ -16,6 +16,7 @@
 #define TIMER_PRESCALER_RATE 256
 #define TICKS_PER_SECOND(prescaler_rate) (F_CPU / prescaler_rate)
 
+char * MSG = "interrupted!";
 
 void uart_putchar(char c)
 {
@@ -34,7 +35,7 @@ void uart_println(char * s)
 
 ISR(TIMER1_COMPA_vect)
 {
-    uart_println("wazzup!");
+    uart_println(MSG);
     PORTB ^= _BV(LED_PIN);
 }
 
@@ -55,12 +56,14 @@ int main()
     UCSR0C = _BV(UCSZ01) | _BV(UCSZ00);
     UCSR0B = _BV(RXEN0) | _BV(TXEN0);
 
-    sei();
-    // TODO: is this the correct sleeping code?
     set_sleep_mode (SLEEP_MODE_IDLE);  
     sleep_enable();
+    sei();
+    sleep_cpu(); 
+    sleep_disable();
+    MSG = "huh?";
+    while (1)
+    {
 
-    while (1) {
-        sleep_cpu (); 
     }
 } 
