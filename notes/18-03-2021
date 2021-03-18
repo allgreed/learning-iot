@@ -1,0 +1,16 @@
+- does the microcontrollers have fancy microarchitecture?
+    - they're very simple
+    - variable length cycles => this is how certain register bit access can be faster
+- how does it work that registers are stored in memory layout?
+    - different type of memory, but works as on the single bus
+    - datasheet <- veryf
+- gdb equivalents? o.0
+    - you can buy a debugger
+    - I've seen some emulators -> back in the day they weren't that great
+- what zeroed R1 is used for?
+    - very internals
+    - can be reversed using AI
+- are humans able to write better assembly than a compiler [given the constraints]?
+    - when working on low-level optimization, maaaaybe
+- are we going to cover interrupt routines?
+    - yup :D
