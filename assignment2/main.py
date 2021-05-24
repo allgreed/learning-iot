@@ -34,7 +34,18 @@ def main():
     frame_counter = 0
     faces = []
     _faces = []
-    ser = serial.Serial('/dev/ttyUSB0')
+
+    try:
+        ser = serial.Serial('/dev/ttyUSB0')
+    except serial.serialutil.SerialException:
+        print("Using mock serial implementation!")
+        class MockSerial():
+            def write(*args, **kwargs):
+                pass
+
+            def close(*args, **kwargs):
+                pass
+        ser = MockSerial()
 
     while True:
         if frame_counter >= 30000:
@@ -79,8 +90,6 @@ def main():
 
 
         frame_counter += 1
-
-# TODO: write a test for random picture with no faces, but face-like objects
 
 
 def process_frame(frame):
@@ -159,7 +168,6 @@ def rectangle_intersection_area(a, b):
 def do_the_thing(ser):
     ser.write(b'x')
 
-# TODO: do arduino
 
 if __name__ == "__main__":
     main()
