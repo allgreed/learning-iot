@@ -14,6 +14,7 @@ let
       pytest # testing
       (opencvGtk opencv3)
       face_recognition
+      pyserial
     ];
   pythonCore = pkgs.python38;
   myPython = pythonCore.withPackages pythonPkgs;

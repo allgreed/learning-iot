@@ -1,6 +1,7 @@
 import functools
 import math
 import sys
+import serial
 
 import numpy as np
 import cv2 as cv
@@ -33,6 +34,7 @@ def main():
     frame_counter = 0
     faces = []
     _faces = []
+    ser = serial.Serial('/dev/ttyUSB0')
 
     while True:
         if frame_counter >= 30000:
@@ -50,8 +52,7 @@ def main():
             if len(faces) > 0 and not face_detected:
                 face_detected = True
                 print(f"face[s] detected, known faces: {', '.join(names) or 'nope'}!")
-                # TODO: do the thing with serial
-                    # send 1 character
+                do_the_thing(ser)
             elif len(faces) <= 0 and face_detected:
                 face_detected = False
                 print("no face detected!")
@@ -73,6 +74,7 @@ def main():
             break
 
         if any(cv.waitKey(1) & 0xFF == ord('q') for k in [ord("q"), escape_ascii]):
+            ser.close()
             break
 
 
@@ -152,6 +154,10 @@ def rectangle_intersection_area(a, b):
         return rectangle_area((x1, y1, x2, y2))
     else:
         return 0
+
+
+def do_the_thing(ser):
+    ser.write(b'x')
 
 # TODO: do arduino
 
