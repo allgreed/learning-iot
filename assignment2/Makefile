@@ -8,7 +8,7 @@ run: setup ## run the app
 	python main.py
 
 test: setup ## run unit tests
-	@echo "Not implemented"; false
+	pytest
 
 flash: setup ## upload the programme to microcontroller
 	@echo "Not implemented"; false

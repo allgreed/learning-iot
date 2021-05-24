@@ -1,8 +1,9 @@
 import functools
 import math
+import sys
 
 import numpy as np
-import cv2
+import cv2 as cv
 import face_recognition
 
 
@@ -14,13 +15,14 @@ INPUTS = [
     ("./reference/olgierd2.jpg", "also Olgierd"),
 ]
 EVERY_X_FRAME = 2
-DOWNSCALE_RATIO = 4
+DOWNSCALE_RATIO = 2
 AGREEMENT_PERCENT_THRESHOLD = 85
+IMAGE = sys.argv[1] if len(sys.argv) > 1 else ""
 
 
 cascPath = "haarcascade_frontalface_default.xml"
-faceCascade = cv2.CascadeClassifier(cascPath)
-video_capture = cv2.VideoCapture(0)
+faceCascade = cv.CascadeClassifier(cascPath)
+video_capture = cv.VideoCapture(0)
 known_data = [(face_recognition.face_encodings(face_recognition.load_image_file(i[0]))[0], i[1]) for i in INPUTS]
 known_face_encodings, known_face_names = list(zip(*known_data))
 escape_ascii = 27
@@ -36,10 +38,13 @@ def main():
         if frame_counter >= 30000:
             frame_counter = 0
 
-        _, frame = video_capture.read()
+        if not IMAGE:
+            _, frame = video_capture.read()
+        else:
+            frame = cv.imread(IMAGE)
 
-        if frame_counter % EVERY_X_FRAME != 0:
-            faces, _faces, names = process_frame(frame)
+        if frame_counter % EVERY_X_FRAME == 0:
+            faces, _faces, _, names = process_frame(frame)
 
             # can't use idiom, because it's an np array
             if len(faces) > 0 and not face_detected:
@@ -54,31 +59,31 @@ def main():
         for face in faces:
             rect = box_to_rectangle(face) 
             x, y, xp, yp = rect
-            cv2.rectangle(frame, (x, y), (xp, yp), (0, 255, 0), 2)
+            cv.rectangle(frame, (x, y), (xp, yp), (0, 255, 0), 2)
 
         for face in _faces:
             rect = fr_to_full_size_rectangle(face)
             x, y, xp, yp = rect
-            cv2.rectangle(frame, (x, y), (xp, yp), (255, 0, 0), 2)
+            cv.rectangle(frame, (x, y), (xp, yp), (255, 0, 0), 2)
 
-        cv2.imshow("A", frame)
+        cv.imshow("A", frame)
 
-        if any(cv2.waitKey(1) & 0xFF == ord('q') for k in [ord("q"), escape_ascii]):
+        if IMAGE:
+            cv.imwrite("/tmp/ble.jpg", frame)
             break
+
+        if any(cv.waitKey(1) & 0xFF == ord('q') for k in [ord("q"), escape_ascii]):
+            break
+
 
         frame_counter += 1
 
-# TODO: allow this to be testable - clear inputs and outputs
-# TODO: write a test for me
-# TODO: write a test for me with no glasses and with a mask
-# TODO: write a test for me with other people
-# TODO: write a test for random picture with faces from internet
 # TODO: write a test for random picture with no faces, but face-like objects
 
 
 def process_frame(frame):
     # process in grayscale
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
     faces = faceCascade.detectMultiScale(
         gray,
@@ -88,7 +93,7 @@ def process_frame(frame):
     )
 
     if len(faces) > 0:
-        small_frame = cv2.resize(frame, (0, 0), fx=1 / DOWNSCALE_RATIO, fy=1 / DOWNSCALE_RATIO)
+        small_frame = cv.resize(frame, (0, 0), fx=1 / DOWNSCALE_RATIO, fy=1 / DOWNSCALE_RATIO)
         rgb_small_frame = small_frame[:, :, ::-1]
         face_locations = face_recognition.face_locations(rgb_small_frame)
 
@@ -98,7 +103,10 @@ def process_frame(frame):
             for _face in face_locations:
                 b = fr_to_full_size_rectangle(_face)
 
-                agreement_percent = rectangle_intersection_area(a,b) / min(rectangle_area(a), rectangle_area(b)) * 100
+                try:
+                    agreement_percent = rectangle_intersection_area(a,b) / min(rectangle_area(a), rectangle_area(b)) * 100
+                except ZeroDivisionError:
+                    continue
 
                 if agreement_percent >= AGREEMENT_PERCENT_THRESHOLD:
                     faces_to_be_processed.append(_face)
@@ -116,9 +124,9 @@ def process_frame(frame):
 
         assert len(face_names) == len(set(face_names)), "duplicated names in a match-set, something went terribly wrong!"
 
-        return faces, face_locations, face_names
+        return faces, face_locations, faces_to_be_processed, face_names
 
-    return [], [], []
+    return [], [], [], []
 
 
 def box_to_rectangle(b):
@@ -150,4 +158,4 @@ def rectangle_intersection_area(a, b):
 if __name__ == "__main__":
     main()
     video_capture.release()
-    cv2.destroyAllWindows() 
+    cv.destroyAllWindows() 
