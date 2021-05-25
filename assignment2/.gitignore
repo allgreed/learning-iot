@@ -10,3 +10,6 @@ build
 # pictures - with varying degree of copyright, etc.
 reference
 testset
+
+# submissions
+*.tar.gz
