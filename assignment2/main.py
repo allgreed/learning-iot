@@ -41,7 +41,7 @@ def main():
         print("Using mock serial implementation!")
         class MockSerial():
             def write(*args, **kwargs):
-                pass
+                print("Sending data via MockSerial!")
 
             def close(*args, **kwargs):
                 pass

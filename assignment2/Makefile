@@ -38,7 +38,10 @@ setup: haarcascade_frontalface_default.xml
 
 # Helpers
 # ###############
-.PHONY:
+.PHONY: install-low-power
+
+install-low-power: ## install Low-Power library
+	arduino-cli lib install Low-Power
 
 # Utilities
 # ###############
