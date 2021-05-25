@@ -1,5 +1,8 @@
 #include <LowPower.h>
 
+#define F_CPU 16000000UL
+#define BAUD 9600
+#include <util/setbaud.h>
 
 constexpr char THE_PIN = 6;
 constexpr int  DELAY_MS = 2000;
@@ -11,8 +14,8 @@ char command = 0;
 void setup() {
     pinMode(THE_PIN, OUTPUT);
 
-    // TODO: convert this to 9600 somehow!
-    UBRR0 = 103; // for configuring baud rate of 9600bps
+    UBRR0H = UBRRH_VALUE;
+    UBRR0L = UBRRL_VALUE;
     UCSR0C |= (1 << UCSZ01) | (1 << UCSZ00);
     UCSR0B |= (1 << RXEN0) | (1 << TXEN0) | (1 << RXCIE0);
 
