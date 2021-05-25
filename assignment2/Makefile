@@ -1,8 +1,8 @@
-
+PROJECT := assignment2
 
 # Porcelain
 # ###############
-.PHONY: run flash build test
+.PHONY: run flash build test serial
 
 run: setup ## run the app
 	python main.py
@@ -10,15 +10,25 @@ run: setup ## run the app
 test: setup ## run unit tests
 	pytest
 
-flash: setup ## upload the programme to microcontroller
-	@echo "Not implemented"; false
+flash: build setup ## upload the programme to microcontroller
+	arduino-cli upload -p /dev/ttyUSB0 --fqbn arduino:avr:uno $(PROJECT)
 
-build: setup ## build IoT payload
-	@echo "Not implemented"; false
+build: $(PROJECT).ino build/arduino.avr.uno/..ino.hex setup ## build IoT payload
+	arduino-cli compile --fqbn arduino:avr:uno $<
+	touch build
+
+serial:
+	minicom -D /dev/ttyUSB0 -b 9600
 
 # Plumbing
 # ###############
 .PHONY: setup
+
+build/arduino.avr.uno/..hex:
+	ln -s $(PROJECT).ino.hex $@
+
+build/arduino.avr.uno/..ino.hex:
+	ln -s $(PROJECT).ino.hex $@
 
 haarcascade_frontalface_default.xml:
 	@echo Accepting EULA!

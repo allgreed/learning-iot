@@ -23,9 +23,11 @@ pkgs.mkShell {
   buildInputs =
   with pkgs;
   [
+    minicom
     git
     gnumake
     myPython
     wget
+    arduino-cli
   ];
 }

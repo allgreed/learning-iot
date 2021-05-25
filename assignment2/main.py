@@ -62,8 +62,11 @@ def main():
             # can't use idiom, because it's an np array
             if len(faces) > 0 and not face_detected:
                 face_detected = True
+
                 print(f"face[s] detected, known faces: {', '.join(names) or 'nope'}!")
-                do_the_thing(ser)
+
+                if names:
+                    do_the_thing(ser)
             elif len(faces) <= 0 and face_detected:
                 face_detected = False
                 print("no face detected!")
