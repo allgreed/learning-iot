@@ -1,7 +1,7 @@
 #include <stdlib.h>
 
 extern "C" {
-    uint16_t test_assembly_function();
+    uint16_t addasm(uint16_t ia, uint16_t ib);
 }
 
 void setup() {
@@ -14,9 +14,10 @@ void loop() {
     Serial.write("Led is shining\n");
     delay(1000);
 
-    char str[6];
-    uint16_t i16 = test_assembly_function(); 
-    itoa(i16, str, 16);
+    char str[10];
+    /*uint16_t retval = addasm(0x0102, 0x0203); */
+    uint16_t retval = addasm(0x01ff, 0x0201); 
+    itoa(retval, str, 16);
 
     digitalWrite(LED_BUILTIN, LOW);
     Serial.write(str);
